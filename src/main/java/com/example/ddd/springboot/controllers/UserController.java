@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements BaseAPI {
 
     private final UserService userService;
 
@@ -19,10 +21,11 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<UserDTO> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user.getUsername(), user.getPassword(), user.getEmail());
-        UserDTO response = new UserDTO("User created", createdUser.getId().toString(), createdUser.getUsername(), createdUser.getEmail());
+        UserDTO.UserData userData = new UserDTO.UserData(createdUser.getId().toString(), createdUser.getUsername(), createdUser.getEmail());
+        UserDTO response = new UserDTO("User created", Collections.singletonList(userData));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }
